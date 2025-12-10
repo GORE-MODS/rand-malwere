@@ -1,5 +1,5 @@
 @echo off
-title BLUEFLOWER // NO RECOVERY, NO MERCY
+title BLUEFLOWER MALWERE
 color 4f
 cls
 
@@ -56,3 +56,4 @@ echo               EVEN OEM RESET = IMPOSSIBLE
 echo.
 echo                     YOUR PC IS OFFICIALLY DEAD FOREVER
 timeout /t 999 >nul
+
